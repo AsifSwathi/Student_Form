@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admission Form</title>
+
+  <!-- QR Code Library (QRious) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+
+  <style>
+    /* General page style */
+    body {
+      font-family: 'Times New Roman', serif; /* Set font */
+      margin: 1cm; /* Left margin */
+    }
+
+    /* A4 size border */
+    .page {
+      width: 21cm; /* A4 width */
+      height: 35cm; /* A4 height */
+      padding: 1cm;
+      border: 1px solid black;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Header style */
+    h1, h2, h3 {
+      text-align: center;
+      margin: 2px;
+    }
+
+    h1 {
+      font-size: 18pt;
+      text-transform: uppercase;
+    }
+
+    /* Top row layout for QR code and images */
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    /* QR Code box (4x4 cm) */
+    .qr-box {
+      width: 4cm;
+      height: 4cm;
+      border: 1px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Right-side image box (photo and signature) */
+    .right-images {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3mm; /* 3mm gap between photo and signature */
+    }
+
+    /* Photo box (3.5x4 cm) */
+    .photo-box {
+      width: 3.5cm;
+      height: 4cm;
+      border: 1px solid black;
+    }
+
+    /* Signature box (3.5x1.5 cm) */
+    .sign-box {
+      width: 3.5cm;
+      height: 1.5cm;
+      border: 1px solid black;
+    }
+
+    /* Preview image inside box */
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Date text below image */
+    .date {
+      margin-top: 7mm; /* 7mm below signature */
+      text-align: right;
+    }
+
+    /* Form rows for input fields */
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    /* Labels with fixed width for alignment */
+    .form-row label {
+      width: 5cm;
+      font-size: 13pt;
+    }
+
+    /* Inputs with flexible width */
+    .form-row input, .form-row select {
+      flex: 1;
+      font-size: 13pt;
+      padding: 2px;
+    }
+
+    /* Full width input for address */
+    .full-width {
+      width: 100%;
+    }
+
+    /* Print button styling */
+    #printButton {
+      margin-top: 20px;
+      font-size: 14pt;
+    }
+
+    /* Hide elements when printing (file inputs, button) */
+    @media print {
+      #formInputs, #printButton {
+        display: none;
+      }
+
+      .page {
+        border: none; /* Hide border for printing if needed */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Heading -->
+    <h1>UNIVERSITY COLLEGE</h1>
+    <h2>KAKATIYA UNIVERSITY, WARANGAL</h2>
+    <h3>ADMISSION FORM</h3>
+
+    <!-- QR code + images row -->
+    <div class="top-row">
+      <!-- QR Code box -->
+      <div class="qr-box">
+        <canvas id="qr"></canvas>
+      </div>
+
+      <!-- Photo and Signature boxes -->
+      <div class="right-images">
+        <div class="photo-box" id="photoPreview"></div>
+        <div class="sign-box" id="signPreview"></div>
+        <div class="date" id="todayDate"></div>
+      </div>
+    </div>
+
+    <!-- Input section (hidden during print) -->
+    <div id="formInputs">
+      <!-- File inputs for photo and signature -->
+      <div class="form-row">
+        <label>Upload Photo:</label>
+        <input type="file" id="photoInput" accept="image/*" />
+      </div>
+      <div class="form-row">
+        <label>Upload Signature:</label>
+        <input type="file" id="signInput" accept="image/*" />
+      </div>
+    </div>
+
+    <!-- Form fields -->
+    <div class="form-row">
+      <label>CPGET HTNO</label>
+      <input type="text" id="htno" maxlength="35" />
+    </div>
+    <div class="form-row">
+      <label>CPGET RANK</label>
+      <input type="text" id="rank" maxlength="35" />
+    </div>
+	<div class="form-row">
+  <label for="Subject">Course/Subject</label>
+  <select id="Subject" name="Subject" required>
+    <option value="" disabled selected>Select Course/Subject</option>
+    <option value="M.A. ECONOMICS">M.A. ECONOMICS</option>
+    <option value="M.A. ENGLISH">M.A. ENGLISH</option>
+    <option value="M.A. HISTORY">M.A. HISTORY</option>
+    <option value="M.A. POLITICAL SCIENCE">M.A. POLITICAL SCIENCE</option>
+    <option value="M.A. PUBLIC ADMINISTRATION">M.A. PUBLIC ADMINISTRATION</option>
+    <option value="M.A. SOCIOLOGY">M.A. SOCIOLOGY</option>
+    <option value="M.Sc. BOTANY">M.Sc. BOTANY</option>
+    <option value="M.Sc. CHEMISTRY">M.Sc. CHEMISTRY</option>
+    <option value="M.Sc. COMPUTER SCIENCE">M.Sc. COMPUTER SCIENCE</option>
+    <option value="M.Sc. MATHEMATICS">M.Sc. MATHEMATICS</option>
+    <option value="M.Sc. PHYSICS">M.Sc. PHYSICS</option>
+    <option value="M.Sc. ZOOLOGY">M.Sc. ZOOLOGY</option>
+    <option value="M.T.M.">M.T.M.</option>
+    <option value="M.C.A.">M.C.A.</option>
+    <option value="M.C.J.">M.C.J.</option>
+	<option value="M.H.R.M.">M.H.R.M.</option>
+  </select>
+</div>
+
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" id="name" maxlength="35" />
+    </div>
+    <div class="form-row">
+      <label>Father's Name</label>
+      <input type="text" id="fname" maxlength="35" />
+    </div>
+	<div class="form-row">
+      <label>Mother's Name</label>
+      <input type="text" id="mname" maxlength="35" />
+    </div>
+    <div class="form-row">
+  <label for="Gender">Gender</label>
+  <select id="Gender" name="Gender" required>
+    <option value="" disabled selected>Select Gender</option>
+    <option value="MALE">MALE</option>
+    <option value="FEMALE">FEMALE</option>
+    <option value="OTHERS">OTHERS</option>
+  </select>
+</div>
+    <div class="form-row">
+  <label for="sstatus">Social Status</label>
+  <select id="sstatus" name="status" required>
+  <option value="" disabled selected>Select Status</option>
+    <option value="OC">OC</option>
+    <option value="BC-A">BC-A</option>
+    <option value="BC-B">BC-B</option>
+    <option value="BC-C">BC-C</option>
+    <option value="BC-D">BC-D</option>
+    <option value="SC">SC</option>
+    <option value="ST">ST</option>
+  </select>
+</div>
+<div class="form-row">
+  <label for="dob">Date of Birth</label>
+  <input type="text" id="dob" name="dob" maxlength="10"
+         placeholder="dd/mm/yyyy"
+         pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$"
+         required
+         title="Enter date in dd/mm/yyyy format" />
+</div>
+    <!-- Address Fields -->
+    <div class="form-row">
+      <label>House No</label>
+      <input type="text" id="addr1" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>Street</label>
+      <input type="text" id="addr2" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>Mandal</label>
+      <input type="text" id="addr3" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>District</label>
+      <input type="text" id="addr4" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>State</label>
+      <input type="text" id="addr5" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <label>PIN</label>
+      <input type="text" id="pin" maxlength="6" />
+    </div>
+    <div class="form-row">
+      <label>Mobile</label>
+      <input type="text" id="mobile" maxlength="10" />
+    </div>
+    <div class="form-row">
+      <label>Aadhaar</label>
+      <input type="text" id="aadhaar" maxlength="12" />
+    </div>
+	<div class="form-row">
+  <label for="pob">Place of Birth</label>
+  <input type="text" id="pob" name="pob" maxlength="30" />
+</div>
+
+<div class="form-row">
+  <label for="occupation">Occupation</label>
+  <input type="text" id="occupation" name="occupation" maxlength="20" />
+</div>
+
+<div class="form-row">
+  <label for="upino">UPI No</label>
+  <input type="text" id="upino" name="upino" maxlength="20" />
+</div>
+
+<div class="form-row">
+  <label for="upidate">UPI Date</label>
+  <input type="text" id="upidate" name="upidate" maxlength="10"
+         placeholder="dd/mm/yyyy"
+         pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$"
+         title="Enter date in dd/mm/yyyy format" required />
+</div>
+
+<div class="form-row">
+  <label for="upiamount">UPI Amount</label>
+  <input type="text" id="upiamount" name="upiamount" maxlength="5" />
+</div>
+
+	<button id="printButton" onclick="generateQR()">Generate QR & Print</button>
+</div> <!-- End of .page -->
+<!-- Buttons -->
+<div style="margin-top: 20px;">
+  <button id="printButton" onclick="window.print()">Print</button>
+  <button onclick="generateQR()">Generate QR</button>
+  <button onclick="startScanner()">Scan QR</button>
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <button onclick="exportToPDF()">Export to PDF</button>
+</div>
+
+<!-- Scanner video (hidden by default) -->
+<video id="scanner" width="300" height="200" style="display:none; border:1px solid black;"></video>
+
+<!-- jsPDF & SheetJS libraries for export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- QR Scanner library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+  // Set today's date
+  document.getElementById("todayDate").innerText = new Date().toLocaleDateString("en-GB");
+
+  // Handle photo & sign previews
+  document.getElementById("photoInput").addEventListener("change", function (e) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById("photoPreview").innerHTML = `<img src="${reader.result}" class="preview-img"/>`;
+    reader.readAsDataURL(e.target.files[0]);
+  });
+
+  document.getElementById("signInput").addEventListener("change", function (e) {
+    const reader = new FileReader();
+    reader.onload = () => document.getElementById("signPreview").innerHTML = `<img src="${reader.result}" class="preview-img"/>`;
+    reader.readAsDataURL(e.target.files[0]);
+  });
+
+  // Generate QR Code
+  function generateQR() {
+    const fields = [
+      "htno", "rank", "Subject", "name", "fname", "mname",
+      "Gender", "sstatus", "dob", "addr1", "addr2", "addr3", "addr4", "addr5",
+      "pin", "mobile", "aadhaar", "pob", "occupation", "upino",
+	  "upidate", "upiamount"
+    ];
+    const data = fields.map(id => `${id.toUpperCase()}:${document.getElementById(id)?.value || ''}`).join('; ');
+    const qr = new QRious({
+      element: document.getElementById("qr"),
+      value: data,
+      size: 120
+    });
+  }
+
+  // Start Webcam QR Scanner
+  function startScanner() {
+    const videoElement = document.getElementById('scanner');
+    videoElement.style.display = 'block';
+    const scanner = new Html5Qrcode("scanner");
+    scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      (decodedText, decodedResult) => {
+        alert("QR Data:\n" + decodedText);
+        scanner.stop().then(() => videoElement.style.display = 'none');
+      },
+      error => { }
+    ).catch(err => alert("Camera error: " + err));
+  }
+
+  // Export to Excel
+  function exportToExcel() {
+    const wb = XLSX.utils.book_new();
+    const fields = {
+      HTNO: "htno", RANK: "rank", SUBJECT: "Subject", NAME: "name", FATHER: "fname", MOTHER: "mname",
+      GENDER: "Gender", STATUS: "sstatus", DOB: "dob",
+      HNO: "addr1", STREET: "addr2", MANDAL: "addr3", DISTRICT: "addr4", STATE: "addr5", PIN: "pin",
+      MOBILE: "mobile", AADHAAR: "aadhaar", POB: "pob", OCCUPATION: "occupation", UPI: "upino",
+	  UPIDATE: "upidate", UPIAMOUNT: "upiamount"
+    };
+    const row = {};
+    for (const label in fields) {
+      const id = fields[label];
+      row[label] = document.getElementById(id)?.value || '';
+    }
+    const ws = XLSX.utils.json_to_sheet([row]);
+    XLSX.utils.book_append_sheet(wb, ws, "FormData");
+    XLSX.writeFile(wb, "AdmissionForm.xlsx");
+  }
+
+  // Export to PDF
+  async function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    pdf.text("Admission Form", 20, 20);
+    const fields = [
+      "htno", "rank", "Subject", "name", "fname", "mname", "Gender",
+      "sstatus", "dob", "add1", "add2", "add3", "add4", "add5", "pin",
+      "mobile", "Aadhaar", "pob", "occupation", "upino"
+    ];
+    let y = 30;
+    fields.forEach((label, i) => {
+      const id = label.toLowerCase();
+      const el = document.getElementById(id);
+      if (el) pdf.text(`${label}: ${el.value}`, 20, y + (i * 8));
+    });
+    pdf.save("AdmissionForm.pdf");
+  }
+</script>
+
+</body>
+</html>
+
+</body>
+<script>
+  // Show today's date
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-GB');
+
+  // Preview Photo
+  document.getElementById('photoInput').addEventListener('change', function () {
+    const file = this.files[0];
+    const preview = document.getElementById('photoPreview');
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Preview Signature
+  document.getElementById('signInput').addEventListener('change', function () {
+    const file = this.files[0];
+    const preview = document.getElementById('signPreview');
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Generate QR and trigger print
+  function generateQR() {
+    const fields = [
+      'htno', 'rank', 'Subject', 'name', 'fname', 'mname',
+      'Gender', 'sstatus', 'dob',
+      'addr1', 'addr2', 'addr3', 'addr4', 'addr5', 'pin',
+      'mobile', 'aadhaar', 'pob', 'occupation', 'upino',
+	  'upidate', 'upiamount'
+    ];
+    let qrData = {};
+    for (let id of fields) {
+      const element = document.getElementById(id);
+      if (element) {
+        qrData[id] = element.value;
+      }
+    }
+
+    // Compress into a single string for QR code
+    const qrString = Object.entries(qrData)
+      .map(([key, val]) => `${key}:${val}`)
+      .join('; ');
+
+    const qr = new QRious({
+      element: document.getElementById('qr'),
+      value: qrString,
+      size: 140 // ~4cm
+    });
+
+    // Trigger print
+    window.print();
+  }
+</script>
+</html>
